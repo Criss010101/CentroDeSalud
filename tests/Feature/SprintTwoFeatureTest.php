@@ -51,6 +51,44 @@ class SprintTwoFeatureTest extends TestCase
         $this->assertTrue($doctor->staffProfile->specialties->contains($specialty));
     }
 
+    public function test_administrator_can_update_and_delete_staff_from_the_staff_management_page(): void
+    {
+        $admin = $this->makeUser('admin');
+        $specialty = Specialty::query()->create(['name' => 'Medicina General', 'is_active' => true]);
+        $doctor = $this->makeDoctor($specialty);
+
+        $this->actingAs($admin)
+            ->put(route('admin.staff.update', $doctor->staffProfile), [
+                'name' => 'Dra. Ana Actualizada',
+                'email' => $doctor->email,
+                'role_id' => $this->role('doctor')->id,
+                'employee_number' => $doctor->staffProfile->employee_number,
+                'position' => 'Médica general',
+                'hire_date' => '2024-03-01',
+                'phone' => '70000002',
+                'specialty_ids' => [$specialty->id],
+            ])
+            ->assertRedirectToRoute('admin.staff.index')
+            ->assertSessionHas('status');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $doctor->id,
+            'name' => 'Dra. Ana Actualizada',
+        ]);
+        $this->assertDatabaseHas('staff_profiles', [
+            'id' => $doctor->staffProfile->id,
+            'phone' => '70000002',
+        ]);
+
+        $this->actingAs($admin)
+            ->delete(route('admin.staff.destroy', $doctor->staffProfile))
+            ->assertRedirectToRoute('admin.staff.index')
+            ->assertSessionHas('status');
+
+        $this->assertDatabaseMissing('users', ['id' => $doctor->id]);
+        $this->assertDatabaseMissing('staff_profiles', ['id' => $doctor->staffProfile->id]);
+    }
+
     public function test_administrator_can_open_sprint_two_management_pages(): void
     {
         $admin = $this->makeUser('admin');
@@ -58,7 +96,11 @@ class SprintTwoFeatureTest extends TestCase
         $doctor = $this->makeDoctor($specialty);
 
         $this->actingAs($admin)->get(route('admin.staff.index'))->assertOk()->assertSeeText($doctor->name);
-        $this->actingAs($admin)->get(route('admin.staff.create'))->assertOk()->assertSeeText('Registrar personal');
+        $this->actingAs($admin)
+            ->get(route('admin.staff.create'))
+            ->assertOk()
+            ->assertSeeText('Registrar personal')
+            ->assertDontSeeText('Recepción');
         $this->actingAs($admin)->get(route('admin.staff.edit', $doctor->staffProfile))->assertOk()->assertSeeText('Editar personal');
         $this->actingAs($admin)->get(route('admin.specialties.index'))->assertOk()->assertSeeText('Medicina General');
         $this->actingAs($admin)->get(route('admin.specialties.create'))->assertOk()->assertSeeText('Nueva especialidad');
@@ -133,6 +175,32 @@ class SprintTwoFeatureTest extends TestCase
 
         $this->assertDatabaseHas('specialties', ['id' => $specialty->id]);
         $this->assertModelExists($doctor->staffProfile);
+    }
+
+    public function test_administrator_can_update_a_specialty_from_the_edit_form(): void
+    {
+        $admin = $this->makeUser('admin');
+        $specialty = Specialty::query()->create([
+            'name' => 'Medicina General',
+            'description' => 'Atención general',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($admin)
+            ->put(route('admin.specialties.update', $specialty), [
+                'name' => 'Medicina Familiar',
+                'description' => 'Atención integral',
+                'is_active' => '1',
+            ])
+            ->assertRedirectToRoute('admin.specialties.index')
+            ->assertSessionHas('status');
+
+        $this->assertDatabaseHas('specialties', [
+            'id' => $specialty->id,
+            'name' => 'Medicina Familiar',
+            'description' => 'Atención integral',
+            'is_active' => true,
+        ]);
     }
 
     public function test_administrator_can_save_weekly_doctor_availability_and_invalid_hours_are_rejected(): void

@@ -34,6 +34,7 @@ class PatientProfileController extends Controller
             'email' => $data['email'],
         ]);
         $profile->update(Arr::only($data, [
+            'name',
             'national_id',
             'birth_date',
             'sex',

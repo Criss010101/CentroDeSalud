@@ -144,4 +144,39 @@
 
     <a href="{{ route('appointments.doctor-agenda') }}" class="mt-6 inline-flex rounded-xl border border-slate-300 px-5 py-3 font-medium text-slate-700 hover:bg-slate-50">Volver a mi agenda</a>
 </section>
+
+@if ($careEncounters->isNotEmpty())
+    <section class="mt-8">
+        <h2 class="text-2xl font-bold text-slate-900">Atenciones presenciales</h2>
+        <div class="mt-4 grid gap-4">
+            @foreach ($careEncounters as $encounter)
+                <article class="rounded-2xl border border-slate-200 bg-white p-5">
+                    <div class="flex flex-wrap items-start justify-between gap-4">
+                        <div>
+                            <p class="font-semibold text-slate-900">{{ $encounter->received_at?->format('d/m/Y H:i') }} · {{ $encounter->source === 'walk_in' ? 'Sin reserva' : 'Con reserva' }}</p>
+                            <p class="mt-1 text-sm text-slate-600">Médico: {{ $encounter->doctor->name }} · Estado: {{ $encounter->status }}</p>
+                        </div>
+                        @if ($encounter->appointment_id)
+                            <a href="{{ route('medical-records.history', $patient) }}" class="text-sm font-semibold text-teal-800 hover:underline">Historial de cita</a>
+                        @else
+                            <a href="{{ route('medical-records.encounters.history', $encounter) }}" class="text-sm font-semibold text-teal-800 hover:underline">Ver atención</a>
+                        @endif
+                    </div>
+                    @if ($encounter->nursingIntake)
+                        <p class="mt-3 text-sm text-slate-700"><span class="font-semibold">Motivo referido:</span> {{ $encounter->nursingIntake->reason }}</p>
+                    @endif
+                    @if ($encounter->medicalConsultation)
+                        <div class="mt-3 border-t border-slate-100 pt-3 text-sm">
+                            <p><span class="font-semibold">Diagnóstico:</span> {{ $encounter->medicalConsultation->diagnosis }}</p>
+                            <p class="mt-1"><span class="font-semibold">Tratamiento:</span> {{ $encounter->medicalConsultation->treatment }}</p>
+                        </div>
+                    @endif
+                </article>
+            @endforeach
+        </div>
+        @if ($careEncounters->hasPages())
+            <div class="mt-5">{{ $careEncounters->links() }}</div>
+        @endif
+    </section>
+@endif
 @endsection

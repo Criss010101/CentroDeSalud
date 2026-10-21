@@ -40,6 +40,7 @@ class PatientRegistrationController extends Controller
             ]);
 
             $user->patientProfile()->create([
+                'name' => $data['name'],
                 'national_id' => $data['national_id'],
                 'birth_date' => $data['birth_date'],
                 'sex' => $data['sex'],

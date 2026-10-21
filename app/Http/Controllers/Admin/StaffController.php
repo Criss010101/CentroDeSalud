@@ -65,7 +65,7 @@ class StaffController extends Controller
 
         return view('admin.staff.edit', [
             'staffProfile' => $staff,
-            'roles' => $this->staffRoles(),
+            'roles' => $this->staffRoles($staff),
             'specialties' => Specialty::query()->where('is_active', true)->orderBy('name')->get(),
         ]);
     }
@@ -79,6 +79,16 @@ class StaffController extends Controller
         if ($staff->user->hasRole('doctor') && $role->code !== 'doctor' && $staff->appointments()->exists()) {
             return back()->withErrors([
                 'role_id' => 'No se puede cambiar el tipo de personal porque el médico tiene citas registradas.',
+            ])->withInput();
+        }
+
+        if (
+            $staff->user->hasRole('staff', 'receptionist')
+            && ! in_array($role->code, ['staff', 'receptionist'], true)
+            && $staff->user->receivedCareEncounters()->exists()
+        ) {
+            return back()->withErrors([
+                'role_id' => 'No se puede cambiar el rol del personal de admisión porque tiene atenciones registradas.',
             ])->withInput();
         }
 
@@ -106,8 +116,8 @@ class StaffController extends Controller
 
     public function destroy(StaffProfile $staff): RedirectResponse
     {
-        if ($staff->appointments()->exists()) {
-            return back()->with('error', 'No se puede eliminar personal con citas registradas.');
+        if ($staff->appointments()->exists() || $staff->user->receivedCareEncounters()->exists()) {
+            return back()->with('error', 'No se puede eliminar personal con citas o atenciones registradas.');
         }
 
         $staff->user()->delete();
@@ -118,10 +128,16 @@ class StaffController extends Controller
     /**
      * @return array<int, Role>
      */
-    private function staffRoles(): array
+    private function staffRoles(?StaffProfile $staff = null): array
     {
+        $roleCodes = ['doctor', 'nurse', 'staff'];
+
+        if ($staff?->user?->hasRole('receptionist')) {
+            $roleCodes[] = 'receptionist';
+        }
+
         return Role::query()
-            ->whereIn('code', ['doctor', 'nurse', 'staff'])
+            ->whereIn('code', $roleCodes)
             ->orderBy('name')
             ->get()
             ->all();
@@ -132,13 +148,19 @@ class StaffController extends Controller
      */
     private function rules(?StaffProfile $staff = null): array
     {
+        $roleCodes = ['doctor', 'nurse', 'staff'];
+
+        if ($staff?->user?->hasRole('receptionist')) {
+            $roleCodes[] = 'receptionist';
+        }
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($staff?->user_id)],
             'role_id' => [
                 'required',
                 'integer',
-                Rule::exists('roles', 'id')->where(fn ($query) => $query->whereIn('code', ['doctor', 'nurse', 'staff'])),
+                Rule::exists('roles', 'id')->where(fn ($query) => $query->whereIn('code', $roleCodes)),
             ],
             'password' => [$staff ? 'nullable' : 'required', 'string', 'min:12', 'confirmed'],
             'employee_number' => ['required', 'string', 'max:40', Rule::unique('staff_profiles', 'employee_number')->ignore($staff)],

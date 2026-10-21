@@ -49,5 +49,41 @@
             </table>
         </div>
     </div>
+
+    <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <div class="border-b border-slate-200 px-5 py-4 text-sm font-medium text-slate-600">
+            Atenciones sin reserva · {{ $walkInEncounters->count() }}
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[700px] text-left text-sm">
+                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                    <tr>
+                        <th class="px-5 py-3 font-semibold">Llegada</th>
+                        <th class="px-5 py-3 font-semibold">Paciente</th>
+                        <th class="px-5 py-3 font-semibold">Médico responsable</th>
+                        <th class="px-5 py-3 font-semibold">Estado</th>
+                        <th class="px-5 py-3 font-semibold">Acción</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse ($walkInEncounters as $encounter)
+                        <tr>
+                            <td class="px-5 py-4 font-semibold">{{ $encounter->received_at?->format('H:i') }}</td>
+                            <td class="px-5 py-4">{{ $encounter->patientProfile->display_name }}<span class="mt-1 block text-slate-500">{{ $encounter->patientProfile->national_id }}</span></td>
+                            <td class="px-5 py-4">{{ $encounter->doctor->name }}</td>
+                            <td class="px-5 py-4">{{ $encounter->status === 'waiting' ? 'En espera' : 'En enfermería' }}</td>
+                            <td class="px-5 py-4">
+                                <a href="{{ route('nursing.encounters.edit', $encounter) }}" class="font-semibold text-teal-800 hover:underline">
+                                    {{ $encounter->nursingIntake ? 'Ver o rectificar' : 'Registrar datos' }}
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="5" class="px-5 py-8 text-center text-slate-500">No hay atenciones sin reserva pendientes para hoy.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 </section>
 @endsection

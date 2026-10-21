@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 #[Fillable(['staff_profile_id', 'patient_id', 'appointment_date', 'start_time', 'status', 'reason'])]
 class Appointment extends Model
@@ -19,6 +20,15 @@ class Appointment extends Model
         return [
             'appointment_date' => 'date',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Appointment $appointment): void {
+            if (blank($appointment->booking_code)) {
+                $appointment->booking_code = 'SJ-'.Str::upper(Str::random(12));
+            }
+        });
     }
 
     public function doctor(): BelongsTo
@@ -39,5 +49,10 @@ class Appointment extends Model
     public function medicalConsultation(): HasOne
     {
         return $this->hasOne(MedicalConsultation::class);
+    }
+
+    public function careEncounter(): HasOne
+    {
+        return $this->hasOne(CareEncounter::class);
     }
 }

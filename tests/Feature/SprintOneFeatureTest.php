@@ -87,6 +87,17 @@ class SprintOneFeatureTest extends TestCase
         $this->assertNotSame($oldSessionId, session()->getId());
     }
 
+    public function test_authenticated_user_can_sign_out_and_the_session_is_invalidated(): void
+    {
+        $patient = $this->makePatient('ana@example.test', '12345678');
+
+        $this->actingAs($patient)
+            ->post(route('logout'))
+            ->assertRedirectToRoute('login');
+
+        $this->assertGuest();
+    }
+
     public function test_invalid_credentials_are_rejected_without_authenticating(): void
     {
         $this->makePatient('ana@example.test', '12345678');

@@ -41,10 +41,10 @@
             <tbody class="divide-y divide-slate-100">
                 @forelse ($patients as $patient)
                     <tr class="hover:bg-slate-50">
-                        <td class="px-5 py-4"><span class="font-semibold text-slate-900">{{ $patient->user->name }}</span><span class="mt-1 block text-slate-500">{{ $patient->user->email }}</span></td>
+                        <td class="px-5 py-4"><span class="font-semibold text-slate-900">{{ $patient->display_name }}</span><span class="mt-1 block text-slate-500">{{ $patient->user?->email ?? 'Sin cuenta de portal' }}</span></td>
                         <td class="px-5 py-4">{{ $patient->national_id }}</td>
-                        <td class="px-5 py-4">{{ $patient->birth_date->format('d/m/Y') }}</td>
-                        <td class="px-5 py-4">{{ ['F' => 'Femenino', 'M' => 'Masculino', 'O' => 'Otro'][$patient->sex] }}</td>
+                        <td class="px-5 py-4">{{ $patient->birth_date?->format('d/m/Y') ?? '—' }}</td>
+                        <td class="px-5 py-4">{{ ['F' => 'Femenino', 'M' => 'Masculino', 'O' => 'Otro'][$patient->sex] ?? '—' }}</td>
                         <td class="px-5 py-4">{{ $patient->phone ?: '—' }}</td>
                     </tr>
                 @empty

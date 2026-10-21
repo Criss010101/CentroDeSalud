@@ -11,18 +11,18 @@
         <dl class="grid gap-4 text-sm sm:grid-cols-3">
             <div>
                 <dt class="font-semibold text-slate-500">Paciente</dt>
-                <dd class="mt-1 font-semibold">{{ $appointment->patient->name }}</dd>
+                <dd class="mt-1 font-semibold">{{ $encounter?->patientProfile->display_name ?? $appointment->patient->name }}</dd>
             </div>
             <div>
                 <dt class="font-semibold text-slate-500">Fecha de cita</dt>
-                <dd class="mt-1">{{ $appointment->appointment_date->format('d/m/Y') }}</dd>
+                <dd class="mt-1">{{ $appointment?->appointment_date?->format('d/m/Y') ?? $encounter?->received_at?->format('d/m/Y') }}</dd>
             </div>
             <div>
                 <dt class="font-semibold text-slate-500">Hora</dt>
-                <dd class="mt-1">{{ substr($appointment->start_time, 0, 5) }}</dd>
+                <dd class="mt-1">{{ $appointment ? substr($appointment->start_time, 0, 5) : 'Atención presencial sin reserva' }}</dd>
             </div>
         </dl>
-        @if ($appointment->nursingIntake)
+        @if ($appointment?->nursingIntake || $encounter?->nursingIntake)
             <p class="mt-4 text-sm text-slate-600">La recepción de enfermería está disponible para consulta desde el historial clínico. Revísala como dato inicial, no como diagnóstico médico.</p>
         @endif
     </div>
@@ -38,7 +38,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('medical-consultations.store', $appointment) }}" class="mt-5 grid gap-5 rounded-2xl border border-slate-200 bg-white p-5 sm:p-8">
+    <form method="POST" action="{{ $encounter ? route('medical-consultations.encounters.store', $encounter) : route('medical-consultations.store', $appointment) }}" class="mt-5 grid gap-5 rounded-2xl border border-slate-200 bg-white p-5 sm:p-8">
         @csrf
         <p class="text-sm text-slate-600">Registra la valoración profesional. No se generan diagnósticos ni recomendaciones automáticas.</p>
         <div>
@@ -68,7 +68,7 @@
         </div>
         <div class="flex flex-wrap gap-3">
             <button type="submit" class="rounded-xl bg-teal-700 px-5 py-3 font-semibold text-white hover:bg-teal-800">Guardar consulta</button>
-            <a href="{{ route('appointments.doctor-agenda', ['date' => $appointment->appointment_date->toDateString()]) }}" class="rounded-xl border border-slate-300 px-5 py-3 font-medium text-slate-700 hover:bg-slate-50">Cancelar</a>
+            <a href="{{ $appointment ? route('appointments.doctor-agenda', ['date' => $appointment->appointment_date->toDateString()]) : route('medical-consultations.encounters.index') }}" class="rounded-xl border border-slate-300 px-5 py-3 font-medium text-slate-700 hover:bg-slate-50">Cancelar</a>
         </div>
     </form>
 </section>

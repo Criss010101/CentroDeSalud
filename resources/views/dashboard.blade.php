@@ -9,6 +9,7 @@
     $isAdmin = $user->hasRole('admin');
     $isDoctor = $user->hasRole('doctor');
     $isNurse = $user->hasRole('nurse');
+    $isAdmissionStaff = $user->hasRole('staff', 'receptionist');
     $isPatient = $user->hasRole('patient');
 @endphp
 
@@ -23,6 +24,8 @@
                     Panel médico
                 @elseif ($isNurse)
                     Panel de enfermería
+                @elseif ($isAdmissionStaff)
+                    Panel de admisión
                 @elseif ($isPatient)
                     Panel del paciente
                 @else
@@ -142,6 +145,14 @@
                 <p class="mt-1 break-all text-sm text-slate-500">{{ $user->email }}</p>
                 <span class="mt-4 inline-flex rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-800">{{ $roleName }}</span>
             </article>
+        </div>
+    @elseif ($isAdmissionStaff)
+        <div class="grid gap-4 sm:grid-cols-2">
+            <a href="{{ route('reception.index') }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">
+                <h2 class="text-lg font-bold text-slate-900">Admisión y recepción</h2>
+                <p class="mt-1 text-sm text-slate-500">Verifica reservas, registra llegadas e inicia atenciones presenciales autorizadas.</p>
+                <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Abrir recepción <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
+            </a>
         </div>
     @elseif ($isNurse)
         <a href="{{ route('nursing.intakes.index') }}" class="group block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">

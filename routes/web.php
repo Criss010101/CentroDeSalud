@@ -13,6 +13,7 @@ use App\Http\Controllers\NursingIntakeController;
 use App\Http\Controllers\PatientDirectoryController;
 use App\Http\Controllers\PatientHistoryController;
 use App\Http\Controllers\PatientProfileController;
+use App\Http\Controllers\ReceptionController;
 use App\Models\PatientProfile;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +41,16 @@ Route::middleware('auth')->group(function (): void {
             'userCount' => User::query()->count(),
         ]);
     })->name('dashboard');
+
+    Route::middleware('role:admin,staff,receptionist')->group(function (): void {
+        Route::get('/recepcion', [ReceptionController::class, 'index'])->name('reception.index');
+        Route::post('/recepcion/citas/{appointment}/ingreso', [ReceptionController::class, 'checkIn'])
+            ->name('reception.appointments.check-in');
+        Route::post('/recepcion/citas/{appointment}/inasistencia', [ReceptionController::class, 'markNoShow'])
+            ->name('reception.appointments.no-show');
+        Route::post('/recepcion/atenciones-sin-reserva', [ReceptionController::class, 'storeWalkIn'])
+            ->name('reception.walk-ins.store');
+    });
 
     Route::middleware('role:patient')->group(function (): void {
         Route::get('/mi-ficha', [PatientProfileController::class, 'edit'])->name('patients.profile.edit');
@@ -69,12 +80,24 @@ Route::middleware('auth')->group(function (): void {
             ->name('medical-consultations.create');
         Route::post('/agenda-medica/{appointment}/consulta', [MedicalConsultationController::class, 'store'])
             ->name('medical-consultations.store');
+        Route::get('/medico/atenciones', [MedicalConsultationController::class, 'encounters'])
+            ->name('medical-consultations.encounters.index');
+        Route::get('/medico/atenciones/{encounter}/consulta', [MedicalConsultationController::class, 'createEncounter'])
+            ->name('medical-consultations.encounters.create');
+        Route::post('/medico/atenciones/{encounter}/consulta', [MedicalConsultationController::class, 'storeEncounter'])
+            ->name('medical-consultations.encounters.store');
+        Route::get('/medico/atenciones/{encounter}/historial', [PatientHistoryController::class, 'showEncounter'])
+            ->name('medical-records.encounters.history');
     });
 
     Route::middleware('role:nurse')->group(function (): void {
         Route::get('/enfermeria/recepcion', [NursingIntakeController::class, 'index'])->name('nursing.intakes.index');
         Route::get('/enfermeria/citas/{appointment}', [NursingIntakeController::class, 'edit'])->name('nursing.intakes.edit');
         Route::post('/enfermeria/citas/{appointment}', [NursingIntakeController::class, 'store'])->name('nursing.intakes.store');
+        Route::get('/enfermeria/atenciones/{encounter}', [NursingIntakeController::class, 'editEncounter'])
+            ->name('nursing.encounters.edit');
+        Route::post('/enfermeria/atenciones/{encounter}', [NursingIntakeController::class, 'storeEncounter'])
+            ->name('nursing.encounters.store');
         Route::post('/enfermeria/registros/{nursingIntake}/rectificaciones', [NursingIntakeController::class, 'amend'])
             ->name('nursing.intakes.amendments.store');
     });
@@ -82,6 +105,9 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/agenda-medica/{appointment}/recepcion', [NursingIntakeController::class, 'doctorShow'])
         ->middleware('role:doctor')
         ->name('nursing.intakes.doctor-show');
+    Route::get('/medico/atenciones/{encounter}/recepcion', [NursingIntakeController::class, 'doctorShowEncounter'])
+        ->middleware('role:doctor')
+        ->name('nursing.encounters.doctor-show');
 
     Route::resource('/admin/usuarios', UserController::class)
         ->names('admin.users')

@@ -26,6 +26,7 @@ class NursingIntakeFeatureTest extends TestCase
         $doctor = $this->makeStaffUser('doctor', 'MED-001');
         $patient = $this->makeUser('patient', ['name' => 'Paciente Protegido']);
         $appointment = $this->makeAppointment($doctor, $patient);
+        $this->checkInAppointment($appointment);
 
         $this->actingAs($nurse)
             ->get(route('nursing.intakes.index'))
@@ -77,7 +78,8 @@ class NursingIntakeFeatureTest extends TestCase
         $futurePatient = $this->makeUser('patient', ['name' => 'Paciente futuro']);
         $cancelledPatient = $this->makeUser('patient', ['name' => 'Paciente cancelado']);
 
-        $this->makeAppointment($doctor, $todayPatient);
+        $todayAppointment = $this->makeAppointment($doctor, $todayPatient);
+        $this->checkInAppointment($todayAppointment);
         $this->makeAppointment($doctor, $futurePatient, today()->addDay()->toDateString());
         $this->makeAppointment($doctor, $cancelledPatient, today()->toDateString(), 'cancelled');
 
@@ -97,6 +99,7 @@ class NursingIntakeFeatureTest extends TestCase
         $otherDoctor = $this->makeStaffUser('doctor', 'MED-004');
         $patient = $this->makeUser('patient');
         $appointment = $this->makeAppointment($doctor, $patient);
+        $this->checkInAppointment($appointment);
 
         $this->actingAs($nurse)->post(route('nursing.intakes.store', $appointment), [
             'reason' => 'Control general',
@@ -145,6 +148,7 @@ class NursingIntakeFeatureTest extends TestCase
         $doctor = $this->makeStaffUser('doctor', 'MED-006');
         $patient = $this->makeUser('patient');
         $appointment = $this->makeAppointment($doctor, $patient);
+        $this->checkInAppointment($appointment);
 
         $this->actingAs($nurse)
             ->from(route('nursing.intakes.edit', $appointment))
@@ -176,6 +180,7 @@ class NursingIntakeFeatureTest extends TestCase
         $doctor = $this->makeStaffUser('doctor', 'MED-007');
         $patient = $this->makeUser('patient');
         $appointment = $this->makeAppointment($doctor, $patient);
+        $this->checkInAppointment($appointment);
 
         $this->actingAs($nurse)->post(route('nursing.intakes.store', $appointment), [
             'reason' => 'Cefalea referida',
@@ -218,6 +223,7 @@ class NursingIntakeFeatureTest extends TestCase
         $doctor = $this->makeStaffUser('doctor', 'MED-008');
         $patient = $this->makeUser('patient');
         $appointment = $this->makeAppointment($doctor, $patient);
+        $this->checkInAppointment($appointment);
 
         $this->actingAs($nurse)->post(route('nursing.intakes.store', $appointment), [
             'reason' => 'Motivo inicial',
@@ -245,6 +251,7 @@ class NursingIntakeFeatureTest extends TestCase
         $doctor = $this->makeStaffUser('doctor', 'MED-009');
         $patient = $this->makeUser('patient');
         $appointment = $this->makeAppointment($doctor, $patient);
+        $this->checkInAppointment($appointment);
         $unsafeText = '<script>alert("x")</script>';
 
         $this->actingAs($nurse)->post(route('nursing.intakes.store', $appointment), [
@@ -289,12 +296,29 @@ class NursingIntakeFeatureTest extends TestCase
         ]);
     }
 
+    private function checkInAppointment(Appointment $appointment): void
+    {
+        $patient = $appointment->patient;
+        $patient->patientProfile()->create([
+            'name' => $patient->name,
+            'national_id' => 'TEST-'.$patient->id,
+            'birth_date' => '1995-06-12',
+            'sex' => 'F',
+        ]);
+        $admissionStaff = $this->makeStaffUser('staff', 'ADM-'.$appointment->id);
+
+        $this->actingAs($admissionStaff)
+            ->post(route('reception.appointments.check-in', $appointment))
+            ->assertRedirectToRoute('reception.index');
+    }
+
     private function role(string $code): Role
     {
         $names = [
             'admin' => 'Administrador',
             'doctor' => 'Médico',
             'nurse' => 'Enfermería',
+            'receptionist' => 'Recepción',
             'staff' => 'Personal administrativo',
             'patient' => 'Paciente',
         ];

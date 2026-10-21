@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\CareEncounterEvent;
 use App\Models\DoctorSchedule;
 use App\Models\Role;
 use App\Models\Specialty;
@@ -62,6 +63,13 @@ class AppointmentController extends Controller
             $isFuture = $this->appointmentIsFuture($appointment);
             $appointment->setAttribute('can_confirm', $appointment->status === 'pending' && $isFuture);
             $appointment->setAttribute('can_cancel', in_array($appointment->status, ['pending', 'confirmed'], true) && $isFuture);
+            $appointment->setAttribute('status_label', [
+                'pending' => 'Pendiente',
+                'confirmed' => 'Confirmada',
+                'completed' => 'Atendida',
+                'cancelled' => 'Cancelada',
+                'no_show' => 'No se presentó',
+            ][$appointment->status] ?? 'Estado desconocido');
 
             return $appointment;
         });
@@ -85,11 +93,24 @@ class AppointmentController extends Controller
             return back()->with('error', 'Solo puedes confirmar citas pendientes que aún no hayan iniciado.');
         }
 
-        $updated = Appointment::query()
-            ->whereKey($appointment->id)
-            ->where('patient_id', $request->user()->id)
-            ->where('status', 'pending')
-            ->update(['status' => 'confirmed']);
+        $updated = DB::transaction(function () use ($appointment, $request): int {
+            $updated = Appointment::query()
+                ->whereKey($appointment->id)
+                ->where('patient_id', $request->user()->id)
+                ->where('status', 'pending')
+                ->update(['status' => 'confirmed']);
+
+            if ($updated === 1) {
+                CareEncounterEvent::query()->create([
+                    'appointment_id' => $appointment->id,
+                    'author_user_id' => $request->user()->id,
+                    'from_status' => 'pending',
+                    'to_status' => 'confirmed',
+                ]);
+            }
+
+            return $updated;
+        });
 
         if ($updated !== 1) {
             return back()->with('error', 'La cita ya no está pendiente de confirmación.');
@@ -106,11 +127,30 @@ class AppointmentController extends Controller
             return back()->with('error', 'Solo puedes cancelar citas pendientes o confirmadas que aún no hayan iniciado.');
         }
 
-        $updated = Appointment::query()
-            ->whereKey($appointment->id)
-            ->where('patient_id', $request->user()->id)
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->update(['status' => 'cancelled']);
+        $updated = DB::transaction(function () use ($appointment, $request): int {
+            $lockedAppointment = Appointment::query()
+                ->whereKey($appointment->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if (
+                (int) $lockedAppointment->patient_id !== (int) $request->user()->id
+                || ! in_array($lockedAppointment->status, ['pending', 'confirmed'], true)
+            ) {
+                return 0;
+            }
+
+            $previousStatus = $lockedAppointment->status;
+            $lockedAppointment->update(['status' => 'cancelled']);
+            CareEncounterEvent::query()->create([
+                'appointment_id' => $lockedAppointment->id,
+                'author_user_id' => $request->user()->id,
+                'from_status' => $previousStatus,
+                'to_status' => 'cancelled',
+            ]);
+
+            return 1;
+        });
 
         if ($updated !== 1) {
             return back()->with('error', 'La cita ya no se puede cancelar.');
@@ -189,7 +229,7 @@ class AppointmentController extends Controller
         $appointments = $doctor->appointments()
             ->whereDate('appointment_date', $date)
             ->whereIn('status', ['pending', 'confirmed', 'completed'])
-            ->with(['patient.patientProfile', 'nursingIntake', 'medicalConsultation'])
+            ->with(['patient.patientProfile', 'nursingIntake', 'medicalConsultation', 'careEncounter'])
             ->orderBy('start_time')
             ->get()
             ->each(function (Appointment $appointment): void {

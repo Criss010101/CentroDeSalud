@@ -164,6 +164,7 @@ class UserController extends Controller
     private function profileData(array $data): array
     {
         return [
+            'name' => $data['name'],
             'national_id' => $data['national_id'],
             'birth_date' => $data['birth_date'],
             'sex' => $data['sex'],

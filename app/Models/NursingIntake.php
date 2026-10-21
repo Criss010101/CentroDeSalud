@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'appointment_id',
+    'care_encounter_id',
     'patient_id',
+    'patient_profile_id',
     'nurse_user_id',
     'reason',
     'blood_pressure_systolic',
@@ -38,6 +40,16 @@ class NursingIntake extends Model
     public function appointment(): BelongsTo
     {
         return $this->belongsTo(Appointment::class);
+    }
+
+    public function careEncounter(): BelongsTo
+    {
+        return $this->belongsTo(CareEncounter::class);
+    }
+
+    public function patientProfile(): BelongsTo
+    {
+        return $this->belongsTo(PatientProfile::class);
     }
 
     public function patient(): BelongsTo

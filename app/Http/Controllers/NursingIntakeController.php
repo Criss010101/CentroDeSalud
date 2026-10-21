@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\CareEncounter;
 use App\Models\NursingIntake;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,11 +18,19 @@ class NursingIntakeController extends Controller
         $appointments = Appointment::query()
             ->whereDate('appointment_date', today())
             ->whereIn('status', ['pending', 'confirmed'])
+            ->whereHas('careEncounter', fn ($query) => $query->whereNotIn('status', ['attended', 'no_show']))
             ->with(['patient.patientProfile', 'doctor.user', 'nursingIntake'])
             ->orderBy('start_time')
             ->get();
+        $walkInEncounters = CareEncounter::query()
+            ->where('source', 'walk_in')
+            ->whereDate('received_at', today())
+            ->whereIn('status', ['waiting', 'in_nursing'])
+            ->with(['patientProfile.user', 'doctor', 'nursingIntake'])
+            ->orderBy('received_at')
+            ->get();
 
-        return view('nursing.intakes.index', compact('appointments'));
+        return view('nursing.intakes.index', compact('appointments', 'walkInEncounters'));
     }
 
     public function edit(Appointment $appointment): View
@@ -31,10 +40,12 @@ class NursingIntakeController extends Controller
             && in_array($appointment->status, ['pending', 'confirmed'], true),
             404,
         );
+        abort_unless($appointment->careEncounter()->exists(), 404);
 
         $appointment->load([
             'patient.patientProfile',
             'doctor.user',
+            'careEncounter',
             'nursingIntake.nurse',
             'nursingIntake.amendments.author',
         ]);
@@ -70,12 +81,27 @@ class NursingIntakeController extends Controller
                 ]);
             }
 
+            $encounter = CareEncounter::query()
+                ->where('appointment_id', $lockedAppointment->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($encounter->status !== 'waiting') {
+                throw ValidationException::withMessages([
+                    'appointment' => 'La atención ya avanzó y no admite un registro inicial nuevo.',
+                ]);
+            }
+
             $lockedAppointment->nursingIntake()->create([
                 ...$measurements,
                 'patient_id' => $lockedAppointment->patient_id,
+                'patient_profile_id' => $lockedAppointment->patient->patientProfile->id,
+                'care_encounter_id' => $encounter->id,
                 'nurse_user_id' => $request->user()->id,
                 'measured_at' => now(),
             ]);
+            $encounter->transitionTo('in_nursing', $request->user());
+            $encounter->transitionTo('pending_consultation', $request->user());
         });
 
         return redirect()->route('nursing.intakes.index')->with('status', 'Los datos iniciales quedaron disponibles para el médico responsable.');
@@ -103,9 +129,76 @@ class NursingIntakeController extends Controller
             ]);
         });
 
-        return redirect()
-            ->route('nursing.intakes.edit', $nursingIntake->appointment_id)
+        $redirect = $nursingIntake->appointment_id
+            ? redirect()->route('nursing.intakes.edit', $nursingIntake->appointment_id)
+            : redirect()->route('nursing.encounters.edit', $nursingIntake->care_encounter_id);
+
+        return $redirect
             ->with('status', 'La rectificación quedó registrada y conserva el historial anterior.');
+    }
+
+    public function editEncounter(CareEncounter $encounter): View
+    {
+        abort_unless(
+            $encounter->source === 'walk_in'
+            && in_array($encounter->status, ['waiting', 'in_nursing'], true),
+            404,
+        );
+
+        $encounter->load([
+            'patientProfile.user',
+            'doctor',
+            'nursingIntake.nurse',
+            'nursingIntake.amendments.author',
+        ]);
+        $latestAmendment = $encounter->nursingIntake?->amendments->last();
+        $measurements = $latestAmendment?->data ?? $encounter->nursingIntake?->measurementData() ?? [];
+
+        return view('nursing.intakes.encounter-edit', compact('encounter', 'latestAmendment', 'measurements'));
+    }
+
+    public function storeEncounter(Request $request, CareEncounter $encounter): RedirectResponse
+    {
+        $measurements = $this->validatedMeasurements($request);
+
+        DB::transaction(function () use ($encounter, $measurements, $request): void {
+            $lockedEncounter = CareEncounter::query()
+                ->whereKey($encounter->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if (
+                $lockedEncounter->source !== 'walk_in'
+                || ! in_array($lockedEncounter->status, ['waiting', 'in_nursing'], true)
+            ) {
+                throw ValidationException::withMessages([
+                    'encounter' => 'Esta atención ya no admite un registro inicial.',
+                ]);
+            }
+
+            if ($lockedEncounter->nursingIntake()->exists()) {
+                throw ValidationException::withMessages([
+                    'encounter' => 'Esta atención ya cuenta con datos iniciales. Agrega una rectificación para corregirlos.',
+                ]);
+            }
+
+            $lockedEncounter->nursingIntake()->create([
+                ...$measurements,
+                'appointment_id' => null,
+                'patient_id' => null,
+                'patient_profile_id' => $lockedEncounter->patient_profile_id,
+                'nurse_user_id' => $request->user()->id,
+                'measured_at' => now(),
+            ]);
+
+            if ($lockedEncounter->status === 'waiting') {
+                $lockedEncounter->transitionTo('in_nursing', $request->user());
+            }
+
+            $lockedEncounter->transitionTo('pending_consultation', $request->user());
+        });
+
+        return redirect()->route('nursing.intakes.index')->with('status', 'Los datos iniciales quedaron registrados para el médico responsable.');
     }
 
     public function doctorShow(Appointment $appointment): View
@@ -123,6 +216,33 @@ class NursingIntakeController extends Controller
 
         return view('nursing.intakes.doctor-show', compact(
             'appointment',
+            'nursingIntake',
+            'latestAmendment',
+            'measurements',
+        ));
+    }
+
+    public function doctorShowEncounter(CareEncounter $encounter): View
+    {
+        abort_unless(
+            (int) $encounter->doctor_user_id === (int) auth()->id(),
+            404,
+        );
+
+        $encounter->load([
+            'patientProfile.user',
+            'doctor',
+            'nursingIntake.nurse',
+            'nursingIntake.amendments.author',
+        ]);
+        $nursingIntake = $encounter->nursingIntake;
+        abort_if($nursingIntake === null, 404);
+
+        $latestAmendment = $nursingIntake->amendments->last();
+        $measurements = $latestAmendment?->data ?? $nursingIntake->measurementData();
+
+        return view('nursing.intakes.doctor-show-encounter', compact(
+            'encounter',
             'nursingIntake',
             'latestAmendment',
             'measurements',

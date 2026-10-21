@@ -20,12 +20,13 @@
                     <h2 class="text-lg font-bold text-slate-900">{{ $appointment->doctor->user->name }}</h2>
                     <p class="mt-1 text-sm text-slate-600">{{ $appointment->doctor->specialties->pluck('name')->join(' · ') }}</p>
                     <p class="mt-3 text-sm text-slate-700">{{ $appointment->appointment_date->format('d/m/Y') }} a las {{ substr($appointment->start_time, 0, 5) }}</p>
+                    <p class="mt-2 text-sm font-semibold text-teal-800">Código de ficha: {{ $appointment->booking_code }}</p>
                     @if ($appointment->reason)
                         <p class="mt-2 text-sm text-slate-500">Motivo: {{ $appointment->reason }}</p>
                     @endif
                 </div>
-                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ ['pending' => 'bg-amber-100 text-amber-800', 'confirmed' => 'bg-emerald-100 text-emerald-800', 'completed' => 'bg-sky-100 text-sky-800', 'cancelled' => 'bg-slate-100 text-slate-600'][$appointment->status] }}">
-                    {{ ['pending' => 'Pendiente', 'confirmed' => 'Confirmada', 'completed' => 'Atendida', 'cancelled' => 'Cancelada'][$appointment->status] }}
+                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ ['pending' => 'bg-amber-100 text-amber-800', 'confirmed' => 'bg-emerald-100 text-emerald-800', 'completed' => 'bg-sky-100 text-sky-800', 'cancelled' => 'bg-slate-100 text-slate-600', 'no_show' => 'bg-slate-100 text-slate-600'][$appointment->status] ?? 'bg-slate-100 text-slate-600' }}">
+                    {{ $appointment->status_label }}
                 </span>
             </div>
             @if ($appointment->can_confirm || $appointment->can_cancel)

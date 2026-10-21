@@ -15,6 +15,7 @@ class RoleSeeder extends Seeder
             ['code' => 'admin', 'name' => 'Administrador'],
             ['code' => 'doctor', 'name' => 'Médico'],
             ['code' => 'nurse', 'name' => 'Enfermería'],
+            ['code' => 'receptionist', 'name' => 'Recepción'],
             ['code' => 'staff', 'name' => 'Personal administrativo'],
             ['code' => 'patient', 'name' => 'Paciente'],
         ] as $attributes) {

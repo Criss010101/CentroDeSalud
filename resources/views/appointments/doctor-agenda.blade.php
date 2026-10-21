@@ -31,11 +31,11 @@
                                 <div class="flex flex-col items-start gap-2">
                                     <a href="{{ route('medical-records.history', $appointment->patient) }}" class="font-semibold text-teal-800 hover:underline">Historial clínico</a>
                                     @if ($appointment->nursingIntake)
-                                        <a href="{{ route('nursing.intakes.doctor-show', $appointment) }}" class="text-sm font-medium text-slate-700 hover:underline">Ver datos iniciales</a>
+                                        <a href="{{ $appointment->careEncounter ? route('nursing.encounters.doctor-show', $appointment->careEncounter) : route('nursing.intakes.doctor-show', $appointment) }}" class="text-sm font-medium text-slate-700 hover:underline">Ver datos iniciales</a>
                                     @endif
                                     @if ($appointment->medicalConsultation)
                                         <span class="text-sm text-slate-500">Consulta registrada</span>
-                                    @elseif ($appointment->can_register_consultation)
+                                    @elseif ($appointment->can_register_consultation && $appointment->careEncounter)
                                         <a href="{{ route('medical-consultations.create', $appointment) }}" class="text-sm font-semibold text-teal-800 hover:underline">Registrar consulta</a>
                                     @elseif ($appointment->status === 'confirmed')
                                         <span class="text-sm text-slate-500">Disponible al iniciar la cita</span>

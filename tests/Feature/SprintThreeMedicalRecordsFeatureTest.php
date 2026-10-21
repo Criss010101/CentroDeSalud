@@ -25,6 +25,7 @@ class SprintThreeMedicalRecordsFeatureTest extends TestCase
         $doctor = $this->makeStaffUser('doctor', 'MED-101');
         $patient = $this->makeUser('patient', ['name' => 'Paciente Historia']);
         $appointment = $this->makeAppointment($doctor, $patient, '2026-10-20', 'confirmed');
+        $this->checkInAppointment($appointment);
 
         $this->actingAs($doctor)
             ->get(route('medical-consultations.create', $appointment))
@@ -259,12 +260,29 @@ class SprintThreeMedicalRecordsFeatureTest extends TestCase
         ]);
     }
 
+    private function checkInAppointment(Appointment $appointment): void
+    {
+        $patient = $appointment->patient;
+        $patient->patientProfile()->create([
+            'name' => $patient->name,
+            'national_id' => 'TEST-'.$patient->id,
+            'birth_date' => '1995-06-12',
+            'sex' => 'F',
+        ]);
+        $admissionStaff = $this->makeStaffUser('staff', 'ADM-'.$appointment->id);
+
+        $this->actingAs($admissionStaff)
+            ->post(route('reception.appointments.check-in', $appointment))
+            ->assertRedirectToRoute('reception.index');
+    }
+
     private function role(string $code): Role
     {
         $names = [
             'admin' => 'Administrador',
             'doctor' => 'Médico',
             'nurse' => 'Enfermería',
+            'receptionist' => 'Recepción',
             'staff' => 'Personal administrativo',
             'patient' => 'Paciente',
         ];

@@ -4,7 +4,7 @@ Aplicación web para administrar las cuentas, los roles y las fichas de paciente
 
 ## Estado del proyecto
 
-Los Sprints 1 y 2 están implementados. El Sprint 3 está en curso: HU12, HU13 y HU15 tienen una implementación inicial, HU16 está implementada inicialmente y HU14 espera las especificaciones oficiales de SNIS. Documentación: [Sprint 1](./Sprint1.md) · [Sprint 2](./Sprint2.md) · [Sprint 3](./Sprint3.md).
+La documentación del proyecto está organizada en dos sprints. El Sprint 2 consolida las historias HU06–HU21 que antes se distribuían entre los Sprints 2, 3 y 4. La HU14, correspondiente a los reportes SNIS, permanece pendiente de las especificaciones oficiales del SEDES. Documentación: [Sprint 1](./Sprint1.md) · [Sprint 2](./Sprint2.md).
 
 - Inicio y cierre de sesión con regeneración de sesión y límite de intentos.
 - Administración de cuentas y asignación de roles: Administrador, Médico y Paciente.
@@ -18,6 +18,9 @@ Los Sprints 1 y 2 están implementados. El Sprint 3 está en curso: HU12, HU13 y
 - Consulta de agenda diaria por parte del médico.
 - Recepción de enfermería con captura inicial, control por rol y rectificaciones trazables.
 - Historial clínico y registro de consultas médicas vinculados a la agenda.
+- Admisión de pacientes con reserva y registro de llegada por personal administrativo.
+- Atención presencial sin reserva cuando está habilitada, sin crear una cita ficticia ni exigir una cuenta del portal.
+- Seguimiento de atenciones con roles y registro de eventos.
 - Reportes institucionales mensuales agregados y exportación CSV para administración.
 
 ## Instalación local

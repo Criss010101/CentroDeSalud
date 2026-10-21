@@ -2,47 +2,68 @@
 
 ## 3.3.1 Sprint Planning (Objetivo del Sprint)
 
-El Sprint 2 del proyecto “Sistema Web para la Gestión y Control de la Información del Centro de Salud San Juan” tuvo como objetivo estructurar la oferta de atención médica y habilitar la programación de citas. El incremento amplía la base del Sprint 1 con la administración del personal, el catálogo de especialidades, los horarios de atención y las agendas de pacientes, médicos y personal administrativo.
+El Sprint 2 del proyecto “Sistema Web para la Gestión y Control de la Información del Centro de Salud San Juan” reúne en una sola iteración el trabajo que anteriormente estaba descrito en los Sprints 2, 3 y 4. Su objetivo es completar el ciclo de atención: desde la organización del personal, las especialidades y las citas hasta la admisión presencial, la valoración inicial de enfermería y la consulta médica.
 
-El alcance del sprint comprende:
+El alcance se organiza en tres etapas relacionadas:
 
-- Registro y mantenimiento de médicos, enfermería y personal administrativo, cada uno con una cuenta de acceso y un rol limitado.
-- Creación y mantenimiento del catálogo de especialidades y asignación de una o más especialidades a cada médico.
-- Configuración de disponibilidad semanal recurrente en bloques de 30 minutos.
-- Consulta de médicos, especialidades y horarios libres por parte del paciente.
-- Reserva, confirmación y cancelación de citas por parte del paciente.
-- Registro de citas presenciales por parte de la administración.
-- Consulta de la agenda diaria del médico autenticado.
+1. **Organización y reserva:** gestión de personal y especialidades, configuración de horarios, consulta de disponibilidad y reserva de citas.
+2. **Valoración y consulta clínica:** registro inicial de enfermería, acceso autorizado al historial y documentación de la consulta médica.
+3. **Admisión y seguimiento presencial:** verificación de reservas, registro de llegada, recepción de pacientes sin reserva cuando el centro lo autorice y trazabilidad del recorrido de atención.
 
-Se adoptó como regla funcional que las reservas de pacientes quedan pendientes de confirmación y bloquean el horario; las citas creadas por administración quedan confirmadas. Las horas disponibles se calculan a partir del horario semanal del médico, las citas activas y la fecha seleccionada.
+La reserva de una cita, la admisión presencial y la atención clínica son procesos distintos. Una reserva no significa que el paciente llegó y la llegada no significa que la consulta ya se realizó. La atención urgente se rige por el protocolo institucional y no debe retrasarse por la falta de una reserva.
 
-El rol de enfermería y el registro laboral se incluyeron en este sprint. La captura de recepción y signos vitales no formó parte del incremento original de HU06–HU11; se incorporó posteriormente como HU16 del Sprint 3.
+El alcance implementado contempla:
+
+- Administración de médicos, personal de enfermería y personal administrativo mediante cuentas y perfiles laborales.
+- Gestión de especialidades y asignación a médicos.
+- Configuración de horarios semanales y consulta de bloques disponibles.
+- Reserva, confirmación, cancelación y consulta de citas, además de la agenda diaria del médico.
+- Registro administrativo de citas presenciales para pacientes existentes.
+- Acceso autorizado al historial y registro de consultas médicas.
+- Captura de motivo referido y mediciones iniciales por enfermería, con consulta para el médico responsable y rectificaciones trazables.
+- Admisión de pacientes con reserva y registro de llegada por personal autorizado.
+- Atención presencial sin reserva, sin crear una cita ficticia ni exigir una cuenta de portal.
+- Separación entre la ficha del paciente, su cuenta opcional, la reserva y la atención presencial.
+- Registro de eventos relevantes para mantener la trazabilidad de la atención.
+
+**Responsable de admisión:** el rol operativo es **Personal administrativo** (`staff`); el administrador también puede realizar las operaciones autorizadas. El rol histórico `receptionist` se conserva para compatibilidad con cuentas ya existentes.
+
+**Pendiente externo:** la historia HU14, relacionada con reportes SNIS, requiere confirmar con el SEDES los formatos, variables y mecanismos de entrega. No se considera implementada por este sprint.
 
 ## 3.3.2 Sprint Backlog (Tareas, responsables, tiempo)
 
-| Historia de Usuario | Descripción | Responsable | Story Points |
+Las historias HU06–HU21 mantienen sus identificadores para facilitar la trazabilidad con los documentos y pruebas existentes. Las estimaciones siguientes provienen de la planificación previa de cada etapa: al consolidarlas no constituyen una nueva estimación de capacidad ni una promesa de duración para el sprint unificado.
+
+| Historia de Usuario | Descripción | Responsable | Story Points de referencia |
 |---|---|---|---:|
-| HU06 - Registro de Personal | CRUD de médicos, enfermería y personal administrativo con cuenta, rol y datos laborales | Administración + backend + frontend | 5 |
-| HU07 - Gestión de Especialidades | CRUD del catálogo y asignación de especialidades a médicos | Administración + backend | 3 |
-| HU08 - Visualización de Disponibilidad | Búsqueda de especialidades, médicos y horarios libres por fecha | Backend + frontend | 5 |
-| HU09 - Programación de Cita - Paciente | Reserva, confirmación, cancelación y consulta de citas propias | Backend + frontend | 8 |
-| HU10 - Programación de Cita - Administración | Registro de citas presenciales para pacientes existentes | Administración + backend + frontend | 5 |
-| HU11 - Consulta de Agenda | Agenda diaria con datos de pacientes y estado de las citas | Backend + frontend | 3 |
-| **Total** |  |  | **29** |
+| HU06 - Registro de Personal | Administrar cuentas, roles y datos laborales del personal | Administración + backend + frontend | 5 |
+| HU07 - Gestión de Especialidades | Mantener especialidades y asignarlas a médicos | Administración + backend | 3 |
+| HU08 - Visualización de Disponibilidad | Consultar médicos, especialidades y horarios disponibles | Backend + frontend | 5 |
+| HU09 - Programación de Cita - Paciente | Reservar, confirmar, cancelar y consultar citas propias | Backend + frontend | 8 |
+| HU10 - Programación de Cita - Administración | Registrar citas presenciales para pacientes existentes | Administración + backend + frontend | 5 |
+| HU11 - Consulta de Agenda | Consultar la agenda diaria del médico autenticado | Backend + frontend | 3 |
+| HU12 - Acceso a Historial Clínico | Consultar antecedentes con acceso restringido | Backend + frontend | 5 |
+| HU13 - Registro de Consulta | Registrar la valoración y las indicaciones médicas | Médico + backend + frontend | 13 |
+| HU14 - Reportes SNIS | Exportar reportes conforme a la especificación oficial | Administración + backend | 8 |
+| HU15 - Reportes Institucionales | Consultar y exportar estadísticas administrativas agregadas | Administración + backend + frontend | 5 |
+| HU16 - Recepción de Enfermería | Registrar datos iniciales y comunicarles al médico responsable | Enfermería + backend + frontend | 6 |
+| HU17 - Admisión y Registro de Llegada | Buscar reservas, verificar datos administrativos y registrar llegada | Personal administrativo + backend + frontend | 8 |
+| HU18 - Atención Presencial sin Reserva | Buscar o crear una ficha y abrir atención sin cita cuando esté autorizada | Personal administrativo + backend + frontend | 13 |
+| HU19 - Flujo y Estados de Atención | Controlar el avance por recepción, enfermería y consulta | Backend + enfermería + medicina | 8 |
+| HU20 - Integración Clínica por Atención | Asociar enfermería y consulta a una atención con o sin cita | Backend + enfermería + medicina | 13 |
+| HU21 - Identificación y Consulta de Reserva | Proporcionar código de reserva y permitir identificar sus datos y estado | Backend + frontend | 5 |
+| **Total de referencia** | **Suma de estimaciones previas; requiere reestimación para un único sprint** |  | **113** |
 
-### Distribución de tiempo de referencia
+La planificación original del Sprint 2 estimaba 22 días de referencia para HU06–HU11. No se asigna una duración total a esta consolidación porque las historias HU12–HU21 se planificaron en etapas distintas y la capacidad disponible del equipo debe acordarse antes de ejecutar el sprint.
 
-La siguiente distribución es una estimación de planificación y no un registro de horas efectivamente trabajadas.
+### Dependencias y restricciones
 
-| Fase | Tiempo estimado |
-|---|---:|
-| Planificación y análisis | 2 días |
-| Modelado y migraciones | 3 días |
-| Desarrollo backend | 7 días |
-| Desarrollo de vistas e integración | 5 días |
-| Pruebas y validación | 3 días |
-| Ajustes y revisión | 2 días |
-| **Total** | **22 días** |
+- HU08 y HU09 dependen de la configuración de horarios y especialidades de HU06–HU07.
+- HU12 y HU13 dependen de la identificación correcta del paciente y de controles de acceso por rol.
+- HU16 registra datos iniciales; no sustituye ni modifica la valoración médica de HU13.
+- HU17–HU20 comparten el concepto de atención presencial y deben conservar la relación entre paciente, reserva opcional, personal responsable y registros clínicos.
+- La admisión sin reserva depende de la autorización y las reglas operativas del centro.
+- HU14 permanece pendiente de especificación oficial del SEDES.
 
 ## 3.3.3 Diagramas de clase e interfaces
 
@@ -63,19 +84,25 @@ classDiagram
         +name
     }
 
+    class PatientProfile {
+        +id
+        +user_id
+        +national_id
+        +birth_date
+        +sex
+    }
+
     class StaffProfile {
         +id
         +user_id
         +employee_number
         +position
-        +hire_date
         +phone
     }
 
     class Specialty {
         +id
         +name
-        +description
         +is_active
     }
 
@@ -89,204 +116,234 @@ classDiagram
 
     class Appointment {
         +id
+        +patient_profile_id
         +staff_profile_id
-        +patient_id
+        +booking_code
         +appointment_date
         +start_time
         +status
-        +reason
     }
 
-    class PatientProfile {
+    class CareEncounter {
         +id
+        +patient_profile_id
+        +appointment_id
+        +status
+        +received_at
+    }
+
+    class CareEncounterEvent {
+        +id
+        +care_encounter_id
         +user_id
-        +national_id
-        +birth_date
-        +sex
+        +event_type
+        +created_at
+    }
+
+    class NursingIntake {
+        +id
+        +appointment_id
+        +author_id
+        +measurements
+    }
+
+    class MedicalConsultation {
+        +id
+        +appointment_id
+        +doctor_id
+        +diagnosis
+        +treatment
     }
 
     User --> Role
     User "1" --> "0..1" StaffProfile
-    User "1" --> "0..1" PatientProfile
+    User "0..1" --> "1" PatientProfile : cuenta opcional
     StaffProfile "*" --> "*" Specialty
     StaffProfile "1" --> "*" DoctorSchedule
     StaffProfile "1" --> "*" Appointment : médico
-    User "1" --> "*" Appointment : paciente
+    PatientProfile "1" --> "*" Appointment
+    PatientProfile "1" --> "*" CareEncounter
+    Appointment "0..1" --> "0..1" CareEncounter
+    CareEncounter "1" --> "*" CareEncounterEvent
+    Appointment "1" --> "0..1" NursingIntake
+    Appointment "1" --> "0..1" MedicalConsultation
 ```
 
-### Diagrama de interfaces principales
+La ficha del paciente puede existir sin una cuenta de acceso. Una atención puede estar relacionada con una cita o ser presencial sin reserva. Los registros clínicos deben conservar su vínculo con el paciente y la atención correspondiente.
+
+### Diagrama del flujo de atención
 
 ```mermaid
 flowchart LR
-    A[Inicio de sesión] --> B[Panel según rol]
-    B --> C[Administrar personal]
-    B --> D[Administrar especialidades]
-    B --> E[Configurar horarios médicos]
-    B --> F[Buscar disponibilidad]
-    F --> G[Reservar cita]
-    G --> H[Mis citas: confirmar o cancelar]
-    B --> I[Registrar cita presencial]
-    B --> J[Agenda diaria del médico]
-    C --> K[Cuenta y datos laborales]
-    D --> L[Asignar especialidades a médicos]
+    A[Paciente consulta disponibilidad] --> B[Reserva una cita]
+    A --> C[Se presenta sin reserva]
+    B --> D[Personal administrativo verifica y registra llegada]
+    C --> E[Personal administrativo busca o registra ficha y admite si está autorizado]
+    D --> F[Atención presencial]
+    E --> F
+    F --> G[Enfermería registra valoración inicial cuando corresponde]
+    G --> H[Médico revisa datos autorizados y registra consulta]
+    F --> H
+    H --> I[Atención finalizada o derivada según el procedimiento]
 ```
 
 ### Interfaces implementadas
 
-- Administración de personal con datos laborales, rol, cuenta de acceso y especialidades.
-- Catálogo de especialidades con estado activo o inactivo.
-- Formulario de disponibilidad semanal, de lunes a domingo, con hora inicial y final.
-- Búsqueda de disponibilidad por fecha y especialidad con reservas desde los bloques libres.
-- Sección “Mis citas” para revisar el estado y gestionar reservas próximas.
-- Formulario administrativo para agendar y confirmar una cita presencial.
-- Agenda diaria del médico con hora, paciente, contacto, motivo y estado.
+- Gestión administrativa de personal, especialidades y disponibilidad semanal.
+- Búsqueda de horarios y reserva de citas por parte del paciente.
+- Consulta de citas propias, código de reserva y estado disponible.
+- Registro administrativo de citas presenciales.
+- Agenda diaria del médico y acceso autorizado al historial clínico.
+- Formularios de enfermería para registrar motivo, mediciones y observaciones iniciales.
+- Consulta por el médico responsable y rectificaciones de registros de enfermería con motivo.
+- Panel de admisión para el personal administrativo.
+- Búsqueda de reservas, verificación y registro de llegada.
+- Registro de atenciones sin reserva cuando el centro habilita ese flujo.
+- Historial de atenciones y eventos asociados.
 
 ### Funciones del cargo de enfermería
 
-En el funcionamiento del centro de salud, el personal de enfermería apoya la atención y el cuidado de los pacientes. Entre sus responsabilidades habituales se encuentran:
+El personal de enfermería participa en la valoración inicial del paciente y comunica al profesional médico la información pertinente. En el sistema puede:
 
-- Recibir y orientar a los pacientes durante su atención.
-- Realizar controles básicos, como la toma y el registro de signos vitales, de acuerdo con los protocolos del centro.
-- Apoyar la preparación del paciente y del consultorio antes de la consulta.
-- Asistir al personal médico durante los procedimientos que correspondan a su formación y protocolos.
-- Dar seguimiento a las indicaciones de cuidado y explicar al paciente las recomendaciones autorizadas por el profesional médico.
-- Mantener los registros de enfermería que establezca el centro y comunicar al médico información relevante sobre el paciente.
-- Aplicar las normas de higiene, bioseguridad y manejo de materiales clínicos.
+- Consultar la cola diaria de pacientes dentro del alcance de sus permisos.
+- Registrar el motivo referido y las mediciones que efectivamente tomó.
+- Registrar, cuando corresponda, presión sistólica y diastólica, pulso, temperatura, frecuencia respiratoria, saturación de oxígeno, peso y talla.
+- Añadir observaciones breves relacionadas con la recepción inicial.
+- Rectificar una captura mediante una nueva versión que indique el motivo, conservando el registro previo.
 
-**Alcance en el sistema de este sprint:** enfermería cuenta con un rol y perfil laboral propios, pero este incremento todavía no incorpora pantallas ni operaciones específicas de enfermería para registrar signos vitales, realizar triaje o actualizar información clínica. Esas funciones requieren definirse e implementarse con sus permisos correspondientes; el acceso de enfermería no equivale al de administración ni al del médico.
+Los datos pueden quedar opcionales cuando no fueron medidos; el sistema no debe inventar valores ni interpretarlos como diagnóstico. Enfermería no registra ni modifica diagnósticos, tratamientos o recomendaciones médicas. El médico autorizado consulta la información vinculada a sus pacientes según las reglas de acceso.
 
 ## 3.3.4 Daily Meeting
 
-La siguiente agenda sirve como referencia para las reuniones diarias de seguimiento del Sprint 2. No constituye un registro histórico de reuniones realizadas.
+La siguiente agenda es una referencia para organizar el seguimiento del sprint unificado; no constituye un registro histórico de reuniones realizadas.
 
-### Ejemplo de agenda diaria
-
-| Día | Tema principal | Resultado esperado |
+| Jornada o fase | Tema principal | Resultado esperado |
 |---|---|---|
-| Lunes | Confirmación del backlog y reglas de acceso por rol | Acordar permisos y datos laborales requeridos |
-| Martes | Modelo de personal y especialidades | Validar cuentas de personal, relaciones y catálogo |
-| Miércoles | Configuración de horarios semanales | Revisar días, intervalos y bloques de 30 minutos |
-| Jueves | Disponibilidad y reserva de pacientes | Comprobar filtros, horarios libres y prevención de reservas duplicadas |
-| Viernes | Citas presenciales y agenda médica | Validar registro administrativo y consulta diaria |
-| Cierre | Pruebas, defectos y demostración del incremento | Resolver incidencias y documentar temas para el siguiente sprint |
+| Planificación | Revisar historias, dependencias, roles y capacidad | Acordar alcance y criterios de aceptación |
+| Modelado | Revisar pacientes, cuentas, citas y atenciones | Preservar relaciones y evitar duplicidad de fichas |
+| Agenda y reservas | Validar horarios, disponibilidad y estados de citas | Evitar reservas duplicadas y proteger las citas propias |
+| Enfermería e historial | Revisar captura, acceso clínico y rectificaciones | Mantener autoría y separar funciones clínicas |
+| Admisión | Validar búsqueda, llegada y atención sin reserva | Registrar ingreso sin crear citas ficticias |
+| Integración y pruebas | Recorrer el flujo completo por rol | Resolver defectos y verificar transiciones |
+| Cierre | Demostrar el incremento y registrar pendientes | Confirmar alcance entregado y decisiones restantes |
 
 ### Puntos de seguimiento
 
-- Confirmar que solo administración pueda modificar personal, especialidades y horarios.
-- Evitar que pacientes consulten o cancelen citas pertenecientes a otras cuentas.
-- Comprobar que una reserva pendiente o confirmada no vuelva a ofrecerse como disponible.
-- Verificar que la cancelación libere el bloque y que las citas pasadas no puedan modificarse.
-- Mantener las citas asociadas al médico y paciente incluso si se intenta eliminar una cuenta.
+- Confirmar que cada rol solo acceda a las operaciones que le corresponden.
+- Evitar reservas simultáneas del mismo bloque horario.
+- Asegurar que el paciente solo consulte sus propias reservas.
+- Mantener separadas la reserva, la llegada y la consulta médica.
+- Evitar duplicar pacientes al admitir a una persona que no tiene cuenta web.
+- Verificar que las rectificaciones clínicas no eliminen el contenido anterior.
+- Confirmar con el SEDES los requisitos de HU14 antes de implementar reportes SNIS.
 
 ## 3.3.5 Scrumboard (ToDo, Doing, Done) - Inicial y final por cada Historia de Usuario
 
-### Scrumboard inicial
+### Scrumboard inicial de referencia
 
 | Historia | ToDo | Doing | Done |
 |---|---|---|---|
 | HU06 Registro de Personal | Definir cargos y datos laborales | Diseñar cuentas y permisos | - |
 | HU07 Gestión de Especialidades | Crear catálogo | Asignar especialidades a médicos | - |
-| HU08 Visualización de Disponibilidad | Diseñar filtros por fecha y especialidad | Calcular bloques libres | - |
-| HU09 Cita del Paciente | Diseñar reserva y estados | Implementar confirmación y cancelación | - |
-| HU10 Cita de Administración | Diseñar flujo para atención presencial | Validar paciente y horario | - |
-| HU11 Consulta de Agenda | Diseñar agenda por fecha | Mostrar citas del médico autenticado | - |
+| HU08 Visualización de Disponibilidad | Definir filtros y horarios | Calcular bloques libres | - |
+| HU09 Cita del Paciente | Diseñar reserva y estados | Confirmación y cancelación | - |
+| HU10 Cita de Administración | Diseñar agendamiento presencial | Validar paciente y horario | - |
+| HU11 Consulta de Agenda | Diseñar agenda diaria | Limitar consulta al médico autenticado | - |
+| HU12 Historial Clínico | Definir acceso autorizado | Relacionar antecedentes con paciente | - |
+| HU13 Registro de Consulta | Definir campos clínicos | Validar profesional y cita | - |
+| HU14 Reportes SNIS | Obtener especificación del SEDES | Definir variables y formato | - |
+| HU15 Reportes Institucionales | Definir indicadores agregados | Preparar consulta y exportación | - |
+| HU16 Recepción de Enfermería | Definir mediciones y permisos | Captura y rectificación trazable | - |
+| HU17 Admisión y Llegada | Definir verificación de reservas | Registrar llegada con auditoría | - |
+| HU18 Atención sin Reserva | Definir reglas institucionales | Evitar citas ficticias y duplicados | - |
+| HU19 Estados de Atención | Acordar transiciones válidas | Integrar los pasos del proceso | - |
+| HU20 Integración Clínica | Definir vínculo entre atención y registros | Integrar enfermería y consulta | - |
+| HU21 Identificación de Reserva | Definir código y consulta de estado | Integrar código único a las citas | - |
 
-### Scrumboard final
+### Scrumboard final según el alcance implementado
 
 | Historia | ToDo | Doing | Done |
 |---|---|---|---|
-| HU06 Registro de Personal | - | - | CRUD de personal con cuentas, roles limitados y datos laborales |
-| HU07 Gestión de Especialidades | - | - | CRUD de especialidades y asignación a médicos |
-| HU08 Visualización de Disponibilidad | - | - | Consulta por fecha y especialidad con bloques de 30 minutos |
-| HU09 Cita del Paciente | - | - | Reserva pendiente, confirmación, cancelación y consulta de citas propias |
-| HU10 Cita de Administración | - | - | Registro administrativo de citas confirmadas para pacientes existentes |
+| HU06 Registro de Personal | - | - | Perfiles laborales, cuentas y roles de personal |
+| HU07 Gestión de Especialidades | - | - | Catálogo y asignación de especialidades |
+| HU08 Visualización de Disponibilidad | - | - | Consulta por fecha, especialidad y bloques disponibles |
+| HU09 Cita del Paciente | - | - | Reserva, confirmación, cancelación y consulta de citas propias |
+| HU10 Cita de Administración | - | - | Registro de citas presenciales para pacientes existentes |
 | HU11 Consulta de Agenda | - | - | Agenda diaria restringida al médico autenticado |
+| HU12 Historial Clínico | - | - | Consulta de antecedentes según autorización |
+| HU13 Registro de Consulta | - | - | Registro médico asociado a la atención correspondiente |
+| HU14 Reportes SNIS | Especificación oficial del SEDES | - | - |
+| HU15 Reportes Institucionales | - | - | Reportes administrativos agregados y exportación disponible |
+| HU16 Recepción de Enfermería | - | - | Captura inicial y rectificaciones trazables |
+| HU17 Admisión y Llegada | - | - | Búsqueda de reservas y registro de llegada |
+| HU18 Atención sin Reserva | - | - | Flujo presencial sin cita ficticia ni cuenta obligatoria |
+| HU19 Estados de Atención | - | - | Seguimiento de estados y operaciones autorizadas |
+| HU20 Integración Clínica | - | - | Atención común para admisión, enfermería y consulta |
+| HU21 Identificación de Reserva | - | - | Código único asociado a la reserva |
+
+HU14 permanece pendiente porque depende de requisitos externos que todavía deben confirmarse. La aceptación de los procesos clínicos y administrativos por parte del centro también debe realizarse conforme a sus protocolos internos.
 
 ## 3.3.6 Product Increment
 
-El incremento implementado para el Sprint 2 incorpora:
+El incremento integrado de este sprint comprende:
 
-- Perfiles laborales relacionados con cuentas de usuario y roles separados para médicos, enfermería y personal administrativo.
-- Gestión de especialidades activas e inactivas y asignación de especialidades a los médicos.
-- Horarios semanales recurrentes con intervalos de 30 minutos.
-- Disponibilidad calculada según el horario del médico, la fecha seleccionada y las citas pendientes o confirmadas.
-- Reservas de pacientes en estado pendiente, con acciones para confirmar o cancelar citas futuras propias.
-- Registro administrativo de citas para pacientes existentes, con estado confirmado.
-- Agenda diaria que muestra únicamente las citas del médico autenticado.
-- Protección de rutas por rol, validación de formularios y persistencia transaccional de las operaciones relacionadas.
+- Personal con perfiles laborales y permisos por rol.
+- Especialidades, disponibilidad médica y horarios semanales.
+- Reservas de pacientes y citas presenciales administrativas.
+- Agenda diaria del médico y acceso restringido a los antecedentes pertinentes.
+- Registro de consultas médicas asociado al paciente y a la atención.
+- Captura inicial de enfermería con mediciones opcionales, autoría y rectificaciones trazables.
+- Admisión por personal administrativo, verificación de reservas y registro de llegada.
+- Atención sin reserva cuando está habilitada, sin generar una cita ficticia ni exigir una cuenta de portal.
+- Registro de eventos y estados para distinguir reserva, admisión y atención clínica.
+- HU14 identificada como pendiente de especificación oficial del SEDES.
+
+### Reglas funcionales y de seguridad
+
+1. Cada cita y cada atención deben poder identificarse de forma única.
+2. La disponibilidad se valida al guardar la reserva para evitar asignaciones duplicadas.
+3. La reserva no equivale a llegada ni a consulta realizada.
+4. Los cambios administrativos relevantes deben registrar quién los realizó y cuándo.
+5. El paciente solo consulta sus propias citas y datos autorizados.
+6. El personal administrativo realiza admisión, pero no accede a diagnósticos por el solo hecho de cumplir funciones administrativas.
+7. Enfermería registra datos iniciales dentro de sus permisos; el diagnóstico y el tratamiento corresponden al profesional médico.
+8. Las rectificaciones conservan el contenido previo y registran autor, fecha y motivo.
+9. La atención sin reserva no exige crear una cita ficticia ni una cuenta de paciente.
+10. Se deben buscar posibles coincidencias antes de crear una nueva ficha de paciente.
+11. La prioridad clínica definida por el protocolo institucional prevalece sobre el orden ordinario de las citas.
+12. El sistema no diagnostica, prescribe ni asigna prioridades clínicas automáticamente.
+13. La falta de reserva no debe retrasar la atención de emergencia.
+14. El acceso a datos personales y clínicos debe limitarse por rol y mantenerse trazable.
+
+### Criterios de aceptación
+
+- Una reserva activa no se ofrece nuevamente como horario disponible.
+- Solo el paciente titular puede consultar o gestionar su reserva en el portal.
+- Personal administrativo autorizado puede verificar una reserva y registrar la llegada sin marcar automáticamente la consulta como atendida.
+- Una atención sin cita puede relacionarse con una ficha existente o con una nueva ficha autorizada, sin requerir cuenta web.
+- Enfermería puede registrar las mediciones válidas efectivamente tomadas, sin introducir campos de diagnóstico médico.
+- El médico responsable puede consultar los datos iniciales necesarios para su atención.
+- La consulta médica se registra separadamente de la admisión y de la recepción de enfermería.
+- Los cambios de estado y las rectificaciones conservan la trazabilidad correspondiente.
+- Las reservas canceladas o las inasistencias no aparecen como consultas médicas atendidas.
 
 ## 3.3.7 Burndown y Burnup
 
-La tabla presenta una distribución ilustrativa de los 29 Story Points para planificación. No representa una medición diaria tomada de una herramienta de seguimiento.
+La suma de 113 Story Points conserva estimaciones elaboradas en planificaciones diferentes; no es una reestimación del sprint unificado. La siguiente tabla es únicamente un ejemplo de formato y no representa trabajo medido ni avance real.
 
-### Tabla de burndown de referencia
+### Tabla de burndown ilustrativa
 
 | Día | Story Points restantes | Story Points completados |
 |---|---:|---:|
-| Día 1 | 29 | 0 |
-| Día 2 | 25 | 4 |
-| Día 3 | 20 | 9 |
-| Día 4 | 15 | 14 |
-| Día 5 | 10 | 19 |
-| Día 6 | 5 | 24 |
-| Día 7 | 0 | 29 |
+| Día 1 | 113 | 0 |
+| Día 2 | 96 | 17 |
+| Día 3 | 79 | 34 |
+| Día 4 | 62 | 51 |
+| Día 5 | 45 | 68 |
+| Día 6 | 28 | 85 |
+| Día 7 | 11 | 102 |
+| Día 8 | 0 | 113 |
 
 ### Interpretación
 
-- El alcance estimado del Sprint 2 es de 29 Story Points.
-- El avance de la tabla se distribuye de forma progresiva para facilitar el seguimiento.
-- Para un burndown real, los puntos restantes deben actualizarse diariamente según las historias aceptadas por el equipo.
-
-### Burnup de referencia (puntos completados acumulados)
-
-```mermaid
-xychart-beta
-    title "Burnup de referencia del Sprint 2"
-    x-axis ["D1", "D2", "D3", "D4", "D5", "D6", "D7"]
-    y-axis "Story Points" 0 --> 29
-    line [0, 4, 9, 14, 19, 24, 29]
-```
-
-## 3.3.8 Sprint Review
-
-La revisión técnica del incremento verificó los flujos de personal, especialidades, horarios, reservas y agenda. La suite automatizada completó 27 pruebas con 171 aserciones exitosas. También se compiló el frontend para producción y se aplicaron las migraciones en la base SQLite local.
-
-### Puntos destacables de la revisión
-
-- El personal se registra con datos laborales y una cuenta con permisos correspondientes a su rol.
-- Los médicos pueden asociarse a especialidades y tener disponibilidad semanal.
-- El paciente puede consultar horarios, reservar, confirmar y cancelar sus propias citas.
-- La administración puede agendar una cita presencial para un paciente existente.
-- Cada médico consulta solamente su propia agenda diaria.
-- Las pruebas incluyen accesos por rol, validación de horarios, reserva de una misma franja, cancelación y aislamiento entre pacientes.
-
-### Decisión y pendientes de validación
-
-El incremento técnico del Sprint 2 está implementado y sus pruebas automatizadas pasan. La aceptación funcional por parte de los stakeholders debe confirmarse mediante una demostración. La validación de migraciones y consultas sobre SQL Server también queda pendiente para el entorno de despliegue; la ejecución local documentada se realizó con SQLite.
-
-## 3.3.9 Sprint Retrospective
-
-### Lo que funcionó bien
-
-- Separar la cuenta de usuario del perfil laboral permitió conservar una base común para roles y autenticación.
-- Definir estados de cita y permisos explícitos facilitó proteger los flujos de paciente, médico y administración.
-- La configuración semanal reutilizable permitió ofrecer horarios disponibles sin cargar cada bloque como un registro separado.
-- Las pruebas de integración cubrieron los principales flujos y restricciones de acceso.
-
-### Lo que se puede mejorar
-
-- Validar el comportamiento de las restricciones y bloqueos de concurrencia en SQL Server, además de SQLite.
-- Acordar con el centro las políticas de confirmación, anticipación, cancelación y duración de las citas.
-- Definir si se requieren notificaciones al reservar, confirmar o cancelar una cita.
-- Sustituir métricas ilustrativas por datos reales de seguimiento del equipo durante el sprint.
-
-### Acciones para el siguiente sprint
-
-- Iniciar el historial clínico y el registro de consultas asociados al paciente y al médico.
-- Definir permisos de acceso y auditoría para los datos clínicos.
-- Confirmar con el SEDES los formatos y métricas exactas para los reportes SNIS.
-- Incluir pruebas de integración con SQL Server y revisar la configuración de despliegue en VPS.
-
-## Conclusión
-
-El Sprint 2 amplió el sistema desde la gestión de usuarios y pacientes hacia la organización de la oferta médica y la atención por citas. El personal puede registrarse y operar con accesos diferenciados; los médicos disponen de especialidades y horarios, y pacientes y administración pueden programar citas según la disponibilidad. La agenda diaria completa el flujo operativo para el médico. Antes de producción, queda validar el comportamiento con SQL Server y obtener la aceptación funcional de los stakeholders.
+El burndown muestra el trabajo pendiente y el burnup el trabajo completado respecto del alcance total. Para el seguimiento real, el equipo debe sustituir estos valores ilustrativos por los puntos estimados y completados en cada jornada, actualizar el alcance cuando cambie y registrar cualquier bloqueo. HU14 no debe contarse como terminado hasta recibir y cumplir la especificación oficial del SEDES.

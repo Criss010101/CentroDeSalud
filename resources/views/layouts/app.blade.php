@@ -74,9 +74,30 @@
                                     <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm5-2h5m-2.5-2.5v5"/></svg>
                                     Usuarios y roles
                                 </a>
+                                <a href="{{ route('admin.staff.index') }}" @if (request()->routeIs('admin.staff.*') && ! request()->routeIs('admin.staff.schedules.*')) aria-current="page" @endif class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {{ request()->routeIs('admin.staff.*') && ! request()->routeIs('admin.staff.schedules.*') ? 'bg-teal-700 text-white shadow-sm shadow-teal-950/20 hover:bg-teal-600' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                                    <span aria-hidden="true">Personal</span>
+                                </a>
+                                <a href="{{ route('admin.specialties.index') }}" @if (request()->routeIs('admin.specialties.*')) aria-current="page" @endif class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {{ request()->routeIs('admin.specialties.*') ? 'bg-teal-700 text-white shadow-sm shadow-teal-950/20 hover:bg-teal-600' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                                    <span aria-hidden="true">Especialidades</span>
+                                </a>
+                                <a href="{{ route('admin.appointments.create') }}" @if (request()->routeIs('admin.appointments.*')) aria-current="page" @endif class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {{ request()->routeIs('admin.appointments.*') ? 'bg-teal-700 text-white shadow-sm shadow-teal-950/20 hover:bg-teal-600' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                                    <span aria-hidden="true">Agendar cita</span>
+                                </a>
+                            @endif
+
+                            @if (auth()->user()->hasRole('doctor'))
+                                <a href="{{ route('appointments.doctor-agenda') }}" @if (request()->routeIs('appointments.doctor-agenda')) aria-current="page" @endif class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {{ request()->routeIs('appointments.doctor-agenda') ? 'bg-teal-700 text-white shadow-sm shadow-teal-950/20 hover:bg-teal-600' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                                    <span aria-hidden="true">Mi agenda</span>
+                                </a>
                             @endif
 
                             @if (auth()->user()->hasRole('patient'))
+                                <a href="{{ route('appointments.availability') }}" @if (request()->routeIs('appointments.availability')) aria-current="page" @endif class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {{ request()->routeIs('appointments.availability') ? 'bg-teal-700 text-white shadow-sm shadow-teal-950/20 hover:bg-teal-600' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                                    <span aria-hidden="true">Agendar cita</span>
+                                </a>
+                                <a href="{{ route('appointments.mine') }}" @if (request()->routeIs('appointments.mine')) aria-current="page" @endif class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {{ request()->routeIs('appointments.mine') ? 'bg-teal-700 text-white shadow-sm shadow-teal-950/20 hover:bg-teal-600' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                                    <span aria-hidden="true">Mis citas</span>
+                                </a>
                                 <a href="{{ route('patients.profile.edit') }}" @if (request()->routeIs('patients.profile.*')) aria-current="page" @endif class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {{ request()->routeIs('patients.profile.*') ? 'bg-teal-700 text-white shadow-sm shadow-teal-950/20 hover:bg-teal-600' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                                     <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 9v-2a7 7 0 0 0-14 0v2m11-8 2 2 4-4"/></svg>
                                     Mi ficha
@@ -85,7 +106,7 @@
                         </nav>
 
                         <div class="hidden border-t border-white/10 p-3 lg:block">
-                            <p class="px-4 py-2 text-xs text-slate-400">Sistema de Gestión · Sprint 1</p>
+                            <p class="px-4 py-2 text-xs text-slate-400">Sistema de Gestión · Sprint 2</p>
                         </div>
                     </aside>
                 @else

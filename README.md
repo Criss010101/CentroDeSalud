@@ -2,13 +2,20 @@
 
 Aplicación web para administrar las cuentas, los roles y las fichas de pacientes del Centro de Salud San Juan.
 
-## Sprint 1 implementado
+## Sprints 1 y 2 implementados
+
+Documentación de las iteraciones: [Sprint 1](./Sprint1.md) · [Sprint 2](./Sprint2.md).
 
 - Inicio y cierre de sesión con regeneración de sesión y límite de intentos.
 - Administración de cuentas y asignación de roles: Administrador, Médico y Paciente.
 - Registro público de pacientes y creación de su ficha personal.
 - Edición de la ficha propia del paciente.
 - Búsqueda filtrable y paginada de pacientes para médicos y administradores.
+- Registro del personal médico y administrativo con cuentas y permisos separados.
+- Gestión de especialidades y asignación a médicos.
+- Horarios semanales recurrentes y disponibilidad en bloques de 30 minutos.
+- Reserva, confirmación y cancelación de citas para pacientes y administración.
+- Consulta de agenda diaria por parte del médico.
 
 ## Instalación local
 

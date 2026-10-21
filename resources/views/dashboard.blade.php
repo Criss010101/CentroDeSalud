@@ -74,6 +74,21 @@
                 <p class="mt-1 text-sm text-slate-500">Administra las cuentas y los roles existentes.</p>
                 <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Administrar usuarios <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
             </a>
+            <a href="{{ route('admin.staff.index') }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">
+                <h2 class="text-lg font-bold text-slate-900">Personal médico y administrativo</h2>
+                <p class="mt-1 text-sm text-slate-500">Registra cuentas laborales y asigna especialidades.</p>
+                <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Administrar personal <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
+            </a>
+            <a href="{{ route('admin.specialties.index') }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">
+                <h2 class="text-lg font-bold text-slate-900">Especialidades</h2>
+                <p class="mt-1 text-sm text-slate-500">Mantén el catálogo de atención médica del centro.</p>
+                <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Administrar especialidades <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
+            </a>
+            <a href="{{ route('admin.appointments.create') }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">
+                <h2 class="text-lg font-bold text-slate-900">Agendar cita presencial</h2>
+                <p class="mt-1 text-sm text-slate-500">Registra citas para pacientes atendidos en ventanilla.</p>
+                <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Crear cita <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
+            </a>
         </div>
     @elseif ($isDoctor)
         <div class="grid gap-4 sm:grid-cols-2">
@@ -96,6 +111,11 @@
             <p class="mt-1 text-sm text-slate-500">Busca pacientes por nombre, correo o carnet y consulta sus datos personales.</p>
             <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Buscar pacientes <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
         </a>
+        <a href="{{ route('appointments.doctor-agenda') }}" class="group mt-4 block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">
+            <h2 class="text-lg font-bold text-slate-900">Agenda médica</h2>
+            <p class="mt-1 text-sm text-slate-500">Consulta las citas programadas para el día.</p>
+            <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Ver agenda <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
+        </a>
     @elseif ($isPatient)
         <div class="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)]">
             <a href="{{ route('patients.profile.edit') }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">
@@ -115,8 +135,20 @@
                 <span class="mt-4 inline-flex rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-800">{{ $roleName }}</span>
             </article>
         </div>
+        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            <a href="{{ route('appointments.availability') }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">
+                <h2 class="text-lg font-bold text-slate-900">Agendar una cita</h2>
+                <p class="mt-1 text-sm text-slate-500">Explora especialidades, médicos y horarios disponibles.</p>
+                <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Ver disponibilidad <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
+            </a>
+            <a href="{{ route('appointments.mine') }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">
+                <h2 class="text-lg font-bold text-slate-900">Mis citas</h2>
+                <p class="mt-1 text-sm text-slate-500">Confirma o cancela tus reservas próximas.</p>
+                <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Consultar citas <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
+            </a>
+        </div>
     @else
-        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-900">Tu cuenta aún no tiene un rol asignado. Comunícate con el administrador del centro.</div>
+        <div class="rounded-2xl border border-sky-200 bg-sky-50 p-6 text-sky-900">Tu cuenta está habilitada con acceso limitado. Comunícate con el administrador si necesitas permisos adicionales.</div>
     @endif
 </section>
 @endsection

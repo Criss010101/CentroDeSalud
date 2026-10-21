@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['staff_profile_id', 'patient_id', 'appointment_date', 'start_time', 'status', 'reason'])]
 class Appointment extends Model
@@ -28,5 +29,15 @@ class Appointment extends Model
     public function patient(): BelongsTo
     {
         return $this->belongsTo(User::class, 'patient_id');
+    }
+
+    public function nursingIntake(): HasOne
+    {
+        return $this->hasOne(NursingIntake::class);
+    }
+
+    public function medicalConsultation(): HasOne
+    {
+        return $this->hasOne(MedicalConsultation::class);
     }
 }

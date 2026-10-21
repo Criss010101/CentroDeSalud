@@ -24,8 +24,8 @@
                         <p class="mt-2 text-sm text-slate-500">Motivo: {{ $appointment->reason }}</p>
                     @endif
                 </div>
-                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $appointment->status === 'confirmed' ? 'bg-emerald-100 text-emerald-800' : ($appointment->status === 'cancelled' ? 'bg-slate-100 text-slate-600' : 'bg-amber-100 text-amber-800') }}">
-                    {{ ['pending' => 'Pendiente', 'confirmed' => 'Confirmada', 'cancelled' => 'Cancelada'][$appointment->status] }}
+                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ ['pending' => 'bg-amber-100 text-amber-800', 'confirmed' => 'bg-emerald-100 text-emerald-800', 'completed' => 'bg-sky-100 text-sky-800', 'cancelled' => 'bg-slate-100 text-slate-600'][$appointment->status] }}">
+                    {{ ['pending' => 'Pendiente', 'confirmed' => 'Confirmada', 'completed' => 'Atendida', 'cancelled' => 'Cancelada'][$appointment->status] }}
                 </span>
             </div>
             @if ($appointment->can_confirm || $appointment->can_cancel)

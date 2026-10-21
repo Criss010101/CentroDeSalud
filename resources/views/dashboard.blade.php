@@ -8,6 +8,7 @@
     $roleName = $user->role?->name ?? 'Usuario';
     $isAdmin = $user->hasRole('admin');
     $isDoctor = $user->hasRole('doctor');
+    $isNurse = $user->hasRole('nurse');
     $isPatient = $user->hasRole('patient');
 @endphp
 
@@ -20,6 +21,8 @@
                     Panel de administración
                 @elseif ($isDoctor)
                     Panel médico
+                @elseif ($isNurse)
+                    Panel de enfermería
                 @elseif ($isPatient)
                     Panel del paciente
                 @else
@@ -89,6 +92,11 @@
                 <p class="mt-1 text-sm text-slate-500">Registra citas para pacientes atendidos en ventanilla.</p>
                 <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Crear cita <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
             </a>
+            <a href="{{ route('admin.reports.index') }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">
+                <h2 class="text-lg font-bold text-slate-900">Reportes institucionales</h2>
+                <p class="mt-1 text-sm text-slate-500">Consulta estadísticas mensuales de pacientes, citas y atención médica.</p>
+                <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Ver reportes <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
+            </a>
         </div>
     @elseif ($isDoctor)
         <div class="grid gap-4 sm:grid-cols-2">
@@ -135,18 +143,13 @@
                 <span class="mt-4 inline-flex rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-800">{{ $roleName }}</span>
             </article>
         </div>
-        <div class="mt-6 grid gap-4 sm:grid-cols-2">
-            <a href="{{ route('appointments.availability') }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">
-                <h2 class="text-lg font-bold text-slate-900">Agendar una cita</h2>
-                <p class="mt-1 text-sm text-slate-500">Explora especialidades, médicos y horarios disponibles.</p>
-                <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Ver disponibilidad <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
-            </a>
-            <a href="{{ route('appointments.mine') }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">
-                <h2 class="text-lg font-bold text-slate-900">Mis citas</h2>
-                <p class="mt-1 text-sm text-slate-500">Confirma o cancela tus reservas próximas.</p>
-                <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Consultar citas <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
-            </a>
-        </div>
+    @elseif ($isNurse)
+        <a href="{{ route('nursing.intakes.index') }}" class="group block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6">
+            <p class="text-xs font-bold uppercase tracking-[0.16em] text-teal-700">Atención inicial</p>
+            <h2 class="mt-2 text-xl font-bold text-slate-900">Recepción y signos vitales</h2>
+            <p class="mt-2 text-sm text-slate-500">Consulta las citas del día y registra las mediciones iniciales para el médico responsable.</p>
+            <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-800">Abrir recepción <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span></span>
+        </a>
     @else
         <div class="rounded-2xl border border-sky-200 bg-sky-50 p-6 text-sky-900">Tu cuenta está habilitada con acceso limitado. Comunícate con el administrador si necesitas permisos adicionales.</div>
     @endif

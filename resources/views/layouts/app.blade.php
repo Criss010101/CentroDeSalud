@@ -83,11 +83,20 @@
                                 <a href="{{ route('admin.appointments.create') }}" @if (request()->routeIs('admin.appointments.*')) aria-current="page" @endif class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {{ request()->routeIs('admin.appointments.*') ? 'bg-teal-700 text-white shadow-sm shadow-teal-950/20 hover:bg-teal-600' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                                     <span aria-hidden="true">Agendar cita</span>
                                 </a>
+                                <a href="{{ route('admin.reports.index') }}" @if (request()->routeIs('admin.reports.*')) aria-current="page" @endif class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {{ request()->routeIs('admin.reports.*') ? 'bg-teal-700 text-white shadow-sm shadow-teal-950/20 hover:bg-teal-600' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                                    <span aria-hidden="true">Reportes institucionales</span>
+                                </a>
                             @endif
 
                             @if (auth()->user()->hasRole('doctor'))
                                 <a href="{{ route('appointments.doctor-agenda') }}" @if (request()->routeIs('appointments.doctor-agenda')) aria-current="page" @endif class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {{ request()->routeIs('appointments.doctor-agenda') ? 'bg-teal-700 text-white shadow-sm shadow-teal-950/20 hover:bg-teal-600' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                                     <span aria-hidden="true">Mi agenda</span>
+                                </a>
+                            @endif
+
+                            @if (auth()->user()->hasRole('nurse'))
+                                <a href="{{ route('nursing.intakes.index') }}" @if (request()->routeIs('nursing.intakes.*') && ! request()->routeIs('nursing.intakes.doctor-show')) aria-current="page" @endif class="flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {{ request()->routeIs('nursing.intakes.*') && ! request()->routeIs('nursing.intakes.doctor-show') ? 'bg-teal-700 text-white shadow-sm shadow-teal-950/20 hover:bg-teal-600' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                                    <span aria-hidden="true">Recepción de enfermería</span>
                                 </a>
                             @endif
 
@@ -106,7 +115,7 @@
                         </nav>
 
                         <div class="hidden border-t border-white/10 p-3 lg:block">
-                            <p class="px-4 py-2 text-xs text-slate-400">Sistema de Gestión · Sprint 2</p>
+                            <p class="px-4 py-2 text-xs text-slate-400">Sistema de Gestión · Sprint 3</p>
                         </div>
                     </aside>
                 @else

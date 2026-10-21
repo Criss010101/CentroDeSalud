@@ -2,9 +2,9 @@
 
 Aplicación web para administrar las cuentas, los roles y las fichas de pacientes del Centro de Salud San Juan.
 
-## Sprints 1 y 2 implementados
+## Estado del proyecto
 
-Documentación de las iteraciones: [Sprint 1](./Sprint1.md) · [Sprint 2](./Sprint2.md).
+Los Sprints 1 y 2 están implementados. El Sprint 3 está en curso: HU12, HU13 y HU15 tienen una implementación inicial, HU16 está implementada inicialmente y HU14 espera las especificaciones oficiales de SNIS. Documentación: [Sprint 1](./Sprint1.md) · [Sprint 2](./Sprint2.md) · [Sprint 3](./Sprint3.md).
 
 - Inicio y cierre de sesión con regeneración de sesión y límite de intentos.
 - Administración de cuentas y asignación de roles: Administrador, Médico y Paciente.
@@ -16,6 +16,9 @@ Documentación de las iteraciones: [Sprint 1](./Sprint1.md) · [Sprint 2](./Spri
 - Horarios semanales recurrentes y disponibilidad en bloques de 30 minutos.
 - Reserva, confirmación y cancelación de citas para pacientes y administración.
 - Consulta de agenda diaria por parte del médico.
+- Recepción de enfermería con captura inicial, control por rol y rectificaciones trazables.
+- Historial clínico y registro de consultas médicas vinculados a la agenda.
+- Reportes institucionales mensuales agregados y exportación CSV para administración.
 
 ## Instalación local
 

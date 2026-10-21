@@ -53,6 +53,16 @@ class User extends Authenticatable
         return $this->hasMany(Appointment::class, 'patient_id');
     }
 
+    public function nursingIntakes(): HasMany
+    {
+        return $this->hasMany(NursingIntake::class, 'nurse_user_id');
+    }
+
+    public function medicalConsultations(): HasMany
+    {
+        return $this->hasMany(MedicalConsultation::class, 'doctor_user_id');
+    }
+
     public function hasRole(string ...$roles): bool
     {
         return in_array($this->role?->code, $roles, true);

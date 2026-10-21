@@ -1,13 +1,17 @@
 <?php
 
 use App\Http\Controllers\Admin\DoctorScheduleController;
+use App\Http\Controllers\Admin\InstitutionalReportController;
 use App\Http\Controllers\Admin\SpecialtyController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\PatientRegistrationController;
+use App\Http\Controllers\MedicalConsultationController;
+use App\Http\Controllers\NursingIntakeController;
 use App\Http\Controllers\PatientDirectoryController;
+use App\Http\Controllers\PatientHistoryController;
 use App\Http\Controllers\PatientProfileController;
 use App\Models\PatientProfile;
 use App\Models\User;
@@ -58,12 +62,36 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('role:doctor')
         ->name('appointments.doctor-agenda');
 
+    Route::middleware('role:doctor')->group(function (): void {
+        Route::get('/medico/pacientes/{patient}/historial', [PatientHistoryController::class, 'show'])
+            ->name('medical-records.history');
+        Route::get('/agenda-medica/{appointment}/consulta', [MedicalConsultationController::class, 'create'])
+            ->name('medical-consultations.create');
+        Route::post('/agenda-medica/{appointment}/consulta', [MedicalConsultationController::class, 'store'])
+            ->name('medical-consultations.store');
+    });
+
+    Route::middleware('role:nurse')->group(function (): void {
+        Route::get('/enfermeria/recepcion', [NursingIntakeController::class, 'index'])->name('nursing.intakes.index');
+        Route::get('/enfermeria/citas/{appointment}', [NursingIntakeController::class, 'edit'])->name('nursing.intakes.edit');
+        Route::post('/enfermeria/citas/{appointment}', [NursingIntakeController::class, 'store'])->name('nursing.intakes.store');
+        Route::post('/enfermeria/registros/{nursingIntake}/rectificaciones', [NursingIntakeController::class, 'amend'])
+            ->name('nursing.intakes.amendments.store');
+    });
+
+    Route::get('/agenda-medica/{appointment}/recepcion', [NursingIntakeController::class, 'doctorShow'])
+        ->middleware('role:doctor')
+        ->name('nursing.intakes.doctor-show');
+
     Route::resource('/admin/usuarios', UserController::class)
         ->names('admin.users')
         ->except(['show'])
         ->middleware('role:admin');
 
     Route::middleware('role:admin')->group(function (): void {
+        Route::get('/admin/reportes', [InstitutionalReportController::class, 'index'])->name('admin.reports.index');
+        Route::get('/admin/reportes/exportar', [InstitutionalReportController::class, 'export'])->name('admin.reports.export');
+
         Route::resource('/admin/personal', StaffController::class)
             ->names('admin.staff')
             ->parameters(['personal' => 'staff'])

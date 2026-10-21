@@ -16,6 +16,8 @@ El alcance del sprint comprende:
 
 Se adoptó como regla funcional que las reservas de pacientes quedan pendientes de confirmación y bloquean el horario; las citas creadas por administración quedan confirmadas. Las horas disponibles se calculan a partir del horario semanal del médico, las citas activas y la fecha seleccionada.
 
+El rol de enfermería y el registro laboral se incluyeron en este sprint. La captura de recepción y signos vitales no formó parte del incremento original de HU06–HU11; se incorporó posteriormente como HU16 del Sprint 3.
+
 ## 3.3.2 Sprint Backlog (Tareas, responsables, tiempo)
 
 | Historia de Usuario | Descripción | Responsable | Story Points |

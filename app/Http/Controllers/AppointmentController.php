@@ -188,10 +188,17 @@ class AppointmentController extends Controller
         $date = Carbon::parse($data['date'] ?? today()->toDateString());
         $appointments = $doctor->appointments()
             ->whereDate('appointment_date', $date)
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->with('patient.patientProfile')
+            ->whereIn('status', ['pending', 'confirmed', 'completed'])
+            ->with(['patient.patientProfile', 'nursingIntake', 'medicalConsultation'])
             ->orderBy('start_time')
-            ->get();
+            ->get()
+            ->each(function (Appointment $appointment): void {
+                $appointment->setAttribute(
+                    'can_register_consultation',
+                    $appointment->status === 'confirmed'
+                    && Carbon::parse($appointment->appointment_date->toDateString().' '.$appointment->start_time)->isPast(),
+                );
+            });
 
         return view('appointments.doctor-agenda', compact('appointments', 'date'));
     }
